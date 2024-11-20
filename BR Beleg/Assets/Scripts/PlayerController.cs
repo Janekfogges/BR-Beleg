@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
             }
         }else
         {
-            direction.y += Gravity * Time.deltaTime;
+            direction.y += Gravity * Time.deltaTime; //spieler fällt
 
         }
 

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController2 : MonoBehaviour
@@ -8,27 +7,28 @@ public class PlayerController2 : MonoBehaviour
     private Vector3 direction;
     private int desiredLane = 1; // 0-left, 1-middle, 2-right
 
-    public float forwardSpeed;
-    public float laneDistance = 4; // Distance between 2 lanes
+    public float forwardSpeed = 10f;
+    public float laneDistance = 4f; // Distance between 2 lanes
 
     public float jumpForce;
-    public float Gravity = -20;
-    public Animator anim; // Link the Animator component in the Inspector
+    public float gravity = -20f;
+
+    public Animator anim;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // Forward movement
         direction.z = forwardSpeed;
 
-        // Check if grounded and handle jumping
+        // Gravity and jumping
         if (controller.isGrounded)
         {
-            direction.y = -1;
+            direction.y = -1; // Keep the player on the ground
             if (Input.GetKeyDown(KeyCode.UpArrow)) // Jump
             {
                 Jump();
@@ -36,35 +36,28 @@ public class PlayerController2 : MonoBehaviour
         }
         else
         {
-            direction.y += Gravity * Time.deltaTime;
+            direction.y += gravity * Time.deltaTime; // Apply gravity
         }
 
-        // Check input for lane switching
-        if (Input.GetKeyDown(KeyCode.RightArrow)) // Move Right
+        // Lane switching
+        if (Input.GetKeyDown(KeyCode.RightArrow)) // Move right
         {
             desiredLane++;
-            if (desiredLane == 3) desiredLane = 2;
+            if (desiredLane > 2) desiredLane = 2; // Stay within bounds
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) // Move Left
+        if (Input.GetKeyDown(KeyCode.LeftArrow)) // Move left
         {
             desiredLane--;
-            if (desiredLane == -1) desiredLane = 0;
+            if (desiredLane < 0) desiredLane = 0; // Stay within bounds
         }
 
         // Calculate target position for lane switching
-        Vector3 targetPosition = transform.position.z * transform.forward + transform.position.y * transform.up;
+        float targetX = (desiredLane - 1) * laneDistance; // Calculate the target X position
+        float deltaX = targetX - transform.position.x;
 
-        if (desiredLane == 0)
-        {
-            targetPosition += Vector3.left * laneDistance;
-        }
-        else if (desiredLane == 2)
-        {
-            targetPosition += Vector3.right * laneDistance;
-        }
-
-        transform.position = Vector3.Lerp(transform.position, targetPosition, 80 * Time.fixedDeltaTime);
+        // Smoothly move towards the target lane
+        direction.x = deltaX * 10f; // Control the speed of movement between lanes
 
         // Update animator parameters
         anim.SetBool("isGrounded", controller.isGrounded);
@@ -78,25 +71,34 @@ public class PlayerController2 : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Apply movement using the CharacterController
         controller.Move(direction * Time.fixedDeltaTime);
     }
 
     private void Jump()
     {
         direction.y = jumpForce;
-        anim.SetBool("Jump", true); // Trigger jump animation
-        StartCoroutine(ResetTrigger("Jump")); // Reset after triggering
+        anim.SetTrigger("Jump"); // Trigger jump animation
     }
 
     private void Slide()
     {
-        anim.SetBool("Slide", true); // Trigger slide animation
-        StartCoroutine(ResetTrigger("Slide")); // Reset after triggering
+        // Start Slide animation
+        anim.SetTrigger("Slide");
+
+        // Option 1: Automatisch nach Slide zurück zum Run
+        // Nichts weiter notwendig, da der Animator automatisch wechselt, wenn die Exit Time erreicht ist.
+
+        // Option 2: Manuell zurück zum Run (z. B. mit einem Bool)
+        StartCoroutine(EndSlide());
     }
 
-    private IEnumerator ResetTrigger(string triggerName)
+    private IEnumerator EndSlide()
     {
-        yield return new WaitForSeconds(0.1f); // Allow time for the animation to start
-        anim.SetBool(triggerName, false);
+        // Warte, bis die Slide-Dauer vorbei ist
+        yield return new WaitForSeconds(1.0f); // Zeit der Animation
+
+        // Setze das isRunning-Flag
+        anim.SetBool("isRunning", true);
     }
 }
