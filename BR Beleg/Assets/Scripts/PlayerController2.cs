@@ -12,9 +12,8 @@ public class PlayerController2 : MonoBehaviour
 
     public float jumpForce;
     public float gravity = -20f;
-
     public Animator anim;
-
+    public bool isGrounded; 
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -22,6 +21,8 @@ public class PlayerController2 : MonoBehaviour
 
     void Update()
     {
+        isGrounded = controller.isGrounded;
+        anim.SetBool("isGrounded",controller.isGrounded);
         // Forward movement
         direction.z = forwardSpeed;
 
@@ -31,6 +32,7 @@ public class PlayerController2 : MonoBehaviour
             direction.y = -1; // Keep the player on the ground
             if (Input.GetKeyDown(KeyCode.UpArrow)) // Jump
             {
+                
                 Jump();
             }
         }
@@ -59,12 +61,10 @@ public class PlayerController2 : MonoBehaviour
         // Smoothly move towards the target lane
         direction.x = deltaX * 10f; // Control the speed of movement between lanes
 
-        // Update animator parameters
-        anim.SetBool("isGrounded", controller.isGrounded);
-        anim.SetFloat("Speed", forwardSpeed);
 
         if (Input.GetKeyDown(KeyCode.DownArrow)) // Slide
         {
+
             Slide();
         }
     }
@@ -77,28 +77,50 @@ public class PlayerController2 : MonoBehaviour
 
     private void Jump()
     {
+        StartCoroutine(resetJumpState(1.0f));
         direction.y = jumpForce;
-        anim.SetTrigger("Jump"); // Trigger jump animation
+        anim.SetBool("jumpPressed",true);
+        // anim.SetTrigger("Jump"); // Trigger jump animation
     }
 
-    private void Slide()
+private void Slide()
     {
-        // Start Slide animation
-        anim.SetTrigger("Slide");
-
-        // Option 1: Automatisch nach Slide zurück zum Run
-        // Nichts weiter notwendig, da der Animator automatisch wechselt, wenn die Exit Time erreicht ist.
-
-        // Option 2: Manuell zurück zum Run (z. B. mit einem Bool)
-        StartCoroutine(EndSlide());
+        StartCoroutine(HeightPingPong(2f, 0.75f, 1.0f));
+        if (isGrounded) anim.SetTrigger("slide");
     }
 
-    private IEnumerator EndSlide()
+    private IEnumerator HeightPingPong(float startHeight, float midHeight, float duration)
     {
-        // Warte, bis die Slide-Dauer vorbei ist
-        yield return new WaitForSeconds(1.0f); // Zeit der Animation
+        float halfDuration = duration / 2f;
+        float elapsedTime = 0f;
 
-        // Setze das isRunning-Flag
-        anim.SetBool("isRunning", true);
+        // Interpolate from startHeight to midHeight
+        while (elapsedTime < halfDuration)
+        {
+            controller.height = Mathf.Lerp(startHeight, midHeight, elapsedTime / halfDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the height is exactly midHeight
+        controller.height = midHeight;
+
+        elapsedTime = 0f;
+
+        // Interpolate from midHeight back to startHeight
+        while (elapsedTime < halfDuration)
+        {
+            controller.height = Mathf.Lerp(midHeight, startHeight, elapsedTime / halfDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the height is exactly startHeight
+        controller.height = startHeight;
+    }
+        private IEnumerator resetJumpState(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        anim.SetBool("jumpPressed",false);
     }
 }
