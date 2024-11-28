@@ -83,7 +83,7 @@ public class PlayerController2 : MonoBehaviour
         // anim.SetTrigger("Jump"); // Trigger jump animation
     }
 
-private void Slide()
+    private void Slide()
     {
         StartCoroutine(HeightPingPong(2f, 0.75f, 1.0f));
         if (isGrounded) anim.SetTrigger("slide");
@@ -118,7 +118,8 @@ private void Slide()
         // Ensure the height is exactly startHeight
         controller.height = startHeight;
     }
-        private IEnumerator resetJumpState(float duration)
+    
+    private IEnumerator resetJumpState(float duration)
     {
         yield return new WaitForSeconds(duration);
         anim.SetBool("jumpPressed",false);
