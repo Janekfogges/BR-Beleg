@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4588547417443676550}
   - component: {fileID: 4588547417444807494}
   - component: {fileID: 4588547417446968099}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SM_PolygonPrototype_Prop_Cone_01 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -143,6 +143,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SM_PolygonPrototype_Buildings_Column_2x3_01P
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 0d85decc1128f9c408b485218f4131e3, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 0d85decc1128f9c408b485218f4131e3, type: 3}
       propertyPath: m_RootOrder
       value: 1

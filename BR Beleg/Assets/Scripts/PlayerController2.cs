@@ -14,6 +14,7 @@ public class PlayerController2 : MonoBehaviour
     public float gravity = -20f;
     public Animator anim;
     public bool isGrounded; 
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -89,6 +90,7 @@ public class PlayerController2 : MonoBehaviour
         if (isGrounded) anim.SetTrigger("slide");
     }
 
+    //um durch den Colider durchzurollen
     private IEnumerator HeightPingPong(float startHeight, float midHeight, float duration)
     {
         float halfDuration = duration / 2f;
@@ -123,5 +125,10 @@ public class PlayerController2 : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
         anim.SetBool("jumpPressed",false);
+    }
+
+    public void die()
+    {
+        Debug.Log("Scheiﬂe");
     }
 }
