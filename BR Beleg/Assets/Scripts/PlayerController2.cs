@@ -127,8 +127,11 @@ public class PlayerController2 : MonoBehaviour
         anim.SetBool("jumpPressed",false);
     }
 
-    public void die()
+    private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        Debug.Log("Scheiﬂe");
+        if (hit.transform.tag == "Obstacle")
+        {
+            PlayerManager.gameOver = true;
+        }
     }
 }
