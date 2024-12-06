@@ -31,7 +31,7 @@ public class PlayerController2 : MonoBehaviour
         if (controller.isGrounded)
         {
             direction.y = -1; // Keep the player on the ground
-            if (Input.GetKeyDown(KeyCode.UpArrow)) // Jump
+            if (Input.GetKeyDown(KeyCode.UpArrow) || SwipeManager.swipeDown) // Jump
             {
                 
                 Jump();
@@ -43,13 +43,13 @@ public class PlayerController2 : MonoBehaviour
         }
 
         // Lane switching
-        if (Input.GetKeyDown(KeyCode.RightArrow)) // Move right
+        if (Input.GetKeyDown(KeyCode.RightArrow) || SwipeManager.swipeRight) // Move right
         {
             desiredLane++;
             if (desiredLane > 2) desiredLane = 2; // Stay within bounds
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) // Move left
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || SwipeManager.swipeLeft) // Move left
         {
             desiredLane--;
             if (desiredLane < 0) desiredLane = 0; // Stay within bounds
@@ -63,7 +63,7 @@ public class PlayerController2 : MonoBehaviour
         direction.x = deltaX * 10f; // Control the speed of movement between lanes
 
 
-        if (Input.GetKeyDown(KeyCode.DownArrow)) // Slide
+        if (Input.GetKeyDown(KeyCode.DownArrow) || SwipeManager.swipeDown) // Slide
         {
 
             Slide();
