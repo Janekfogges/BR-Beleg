@@ -7,7 +7,8 @@ public class PlayerController2 : MonoBehaviour
     private Vector3 direction;
     private int desiredLane = 1; // 0-left, 1-middle, 2-right
 
-    public float forwardSpeed = 10f;
+    public float forwardSpeed;
+    public float maxSpeed;
     public float laneDistance = 4f; // Distance between 2 lanes
 
     public float jumpForce;
@@ -22,6 +23,18 @@ public class PlayerController2 : MonoBehaviour
 
     void Update()
     {
+        if (!PlayerManager.isGameStarted)
+        {
+            return;
+        }
+
+        //Geschwindigkeit erhöhen
+        if (forwardSpeed < maxSpeed)
+        {
+            forwardSpeed += 0.1f * Time.deltaTime;
+        }
+
+
         isGrounded = controller.isGrounded;
         anim.SetBool("isGrounded",controller.isGrounded);
         // Forward movement
@@ -72,6 +85,10 @@ public class PlayerController2 : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!PlayerManager.isGameStarted)
+        {
+            return;
+        }
         // Apply movement using the CharacterController
         controller.Move(direction * Time.fixedDeltaTime);
     }
@@ -132,6 +149,7 @@ public class PlayerController2 : MonoBehaviour
         if (hit.transform.tag == "Obstacle")
         {
             PlayerManager.gameOver = true;
+            FindObjectOfType<AudioManager>().PlaySound("GameOver");
         }
     }
 }
